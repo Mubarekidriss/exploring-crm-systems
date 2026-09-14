@@ -1,0 +1,33 @@
+digraph CRM {
+  graph [rankdir=TB, bgcolor="#ffffff", pad="0.25", nodesep="0.4", ranksep="0.55", fontname="Arial", label="Proposed CRM Architecture", labelloc="t", fontsize=22];
+  node [shape=box, style="rounded,filled", fontname="Arial", fontsize=11, color="#334155", penwidth=1.4, margin="0.15,0.1"];
+  edge [color="#475569", penwidth=1.4, arrowsize=0.7, fontname="Arial", fontsize=9];
+
+  user [label="CRM User", shape=oval, fillcolor="#f8fafc"];
+  browser [label="Browser Interface\nHTML • CSS • JavaScript\njQuery • Bootstrap • DataTables • Chart.js", fillcolor="#dbeafe"];
+
+  subgraph cluster_app {
+    label="PHP Application Layer";
+    color="#93c5fd";
+    style="rounded,dashed";
+    auth [label="Authentication &\nRole Authorization", fillcolor="#fef3c7"];
+    controllers [label="Controllers / API\nInput Validation • CSRF", fillcolor="#e0e7ff"];
+    services [label="Business Services\nContacts • Leads • Opportunities\nTasks • Tickets • Reports", fillcolor="#dcfce7"];
+    data [label="Data Access\nPDO Prepared Statements", fillcolor="#ede9fe"];
+    auth -> controllers -> services -> data;
+  }
+
+  mysql [label="MySQL Database\nCRM Records • Users • Audit Log", shape=cylinder, fillcolor="#fce7f3"];
+  worker [label="Background Worker\nEmail • Exports • Scheduled Jobs", fillcolor="#ffedd5"];
+  smtp [label="SMTP Server\nPHPMailer", fillcolor="#f1f5f9"];
+  logs [label="Application Logs &\nBackup Storage", fillcolor="#f1f5f9"];
+
+  user -> browser [label="HTTPS"];
+  browser -> auth [label="HTTPS request / JSON"];
+  data -> mysql [label="SQL"];
+  services -> worker [label="queue job"];
+  worker -> smtp [label="send email"];
+  services -> logs [label="events / errors"];
+  mysql -> logs [label="encrypted backup", style=dashed];
+  controllers -> browser [label="HTML / JSON", dir=back];
+}
